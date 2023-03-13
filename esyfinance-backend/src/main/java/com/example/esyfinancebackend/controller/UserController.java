@@ -39,4 +39,24 @@ public class UserController {
     }
 
 
+
+    @GetMapping("/api/v1/customer/user-details")
+    User getUserDetails(@RequestHeader("Authorization") String auth){
+
+        if(isNull(auth)){
+            return null;
+        } else {
+            var user = userRepository.userDetails(auth);
+
+            if(isNull(user)){
+                return null;
+            } else {
+                return user;
+            }
+        }
+
+    }
+
+
+
 }

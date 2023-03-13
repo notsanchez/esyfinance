@@ -1,5 +1,6 @@
 package com.example.esyfinancebackend.repository;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
