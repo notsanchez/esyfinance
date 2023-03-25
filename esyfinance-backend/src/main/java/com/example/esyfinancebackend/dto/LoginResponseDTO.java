@@ -5,7 +5,11 @@ import jakarta.persistence.Id;
 
 @Entity
 public class LoginResponseDTO {
-    
+
+    public LoginResponseDTO() {
+        super();
+    }
+
     @Id
     private String publicKey;
 
@@ -17,5 +21,8 @@ public class LoginResponseDTO {
         this.publicKey = publicKey;
     }
 
+    public LoginResponseDTO(String publicKey) {
+        this.publicKey = publicKey;
+    }
 
 }

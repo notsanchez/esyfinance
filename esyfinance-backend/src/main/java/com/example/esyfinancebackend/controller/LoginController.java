@@ -10,6 +10,9 @@ import com.example.esyfinancebackend.dto.LoginResponseDTO;
 import com.example.esyfinancebackend.model.User;
 import com.example.esyfinancebackend.repository.LoginRepository;
 import com.example.esyfinancebackend.repository.UserRepository;
+import com.example.esyfinancebackend.security.JWTDecoderService;
+
+import lombok.var;
 
 @RestController
 public class LoginController {
@@ -30,18 +33,23 @@ public class LoginController {
     }
 
     @PostMapping("/api/v1/auth/login")
-    LoginResponseDTO login(@RequestBody LoginDTO login){
+    LoginResponseDTO login(@RequestBody LoginDTO login) {
 
         var userResponse = loginRepository.loginUserByPhoneAndPassword(login.getPhone(), login.getPassword());
-        
-        if(isNull(userResponse)){
+
+        if (isNull(userResponse)) {
             return null;
         } else {
-            return userResponse;
+
+            String publicKey = userResponse.getPublicKey();
+
+            var encrypt = JWTDecoderService.EncryptJWT(publicKey);
+
+            LoginResponseDTO response = new LoginResponseDTO(encrypt);
+
+            return response;
         }
 
-    
     }
-    
 
 }

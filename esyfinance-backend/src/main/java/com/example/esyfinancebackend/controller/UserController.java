@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.esyfinancebackend.dto.ErrorDTO;
 import com.example.esyfinancebackend.model.User;
 import com.example.esyfinancebackend.repository.UserRepository;
+import com.example.esyfinancebackend.security.JWTDecoderService;
 
 @RestController
 public class UserController {
@@ -21,16 +23,18 @@ public class UserController {
         return obj == null;
     }
 
-    @GetMapping("/api/v1/customer/user")
-    List<User> getUsers(@RequestHeader("Authorization") String auth){
+    public ErrorDTO errorDTO;
 
-        if(isNull(auth)){
+    @GetMapping("/api/v1/customer/user")
+    List<User> getUsers(@RequestHeader("Authorization") String auth) {
+
+        if (isNull(auth)) {
             return new ArrayList<>();
         } else {
 
             var users = userRepository.findAll();
 
-            if(isNull(users)){
+            if (isNull(users)) {
                 return new ArrayList<>();
             } else {
                 return users;
@@ -38,25 +42,35 @@ public class UserController {
         }
     }
 
-
-
     @GetMapping("/api/v1/customer/user-details")
-    User getUserDetails(@RequestHeader("Authorization") String auth){
+    Object getUserDetails(@RequestHeader("Authorization") String auth) {
 
-        if(isNull(auth)){
-            return null;
+        if (isNull(auth)) {
+            ErrorDTO response = new ErrorDTO("true", "Invalid Token");
+
+            return response;
         } else {
-            var user = userRepository.userDetails(auth);
 
-            if(isNull(user)){
-                return null;
+            var decrypt = JWTDecoderService.DecryptJWT(auth);
+
+            if (decrypt == null) {
+                ErrorDTO response = new ErrorDTO("true", "Invalid token or expired");
+
+                return response;
             } else {
-                return user;
+                var user = userRepository.userDetails(decrypt);
+
+                if (isNull(user)) {
+                    ErrorDTO response = new ErrorDTO("true", "No users found");
+
+                    return response;
+                } else {
+                    return user;
+                }
             }
+
         }
 
     }
-
-
 
 }
